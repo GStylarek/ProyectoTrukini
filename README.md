@@ -96,3 +96,12 @@ Puntuación Total: *int puntos_totales[2]*.
 Ganadores de Baza: *int ganadores_baza[CARTAS_POR_JUGADOR]* (para llevar el registro de quién ganó cada una de las 3 bazas).
 
 
+----------------------------------------------------------------------------------------------------------------
+V1.0
+----------------------------------------------------------------------------------------------------------------
+En la primer versión del código notamos que nuestro código necesitaba varias mejoras:
+
+1. Limpiar la consola por cada nueva ronda.
+2. Eliminar el consumo extra de líneas
+3. Manejo más correcto de "Flor".
+
