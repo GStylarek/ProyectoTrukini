@@ -13,7 +13,7 @@ typedef enum {
     ORO, COPA, ESPADA, BASTO, NUM_PALOS
 } Palo;
 
-// Enum para la posible acción de un jugador
+// Enum para la posible acciÃ³n de un jugador
 typedef enum {
     NADA, TRUCO, ENVIDO
 } Accion;
@@ -24,7 +24,7 @@ typedef enum {
 typedef struct {
     Palo palo;
     int numero;         // 1, 2, 3, 4, 5, 6, 7, 10, 11, 12
-    int valor_truco;    // Jerarquía de la carta (12 es el 1 de Espada, 1 es la más baja)
+    int valor_truco;    // JerarquÃ­a de la carta (12 es el 1 de Espada, 1 es la mÃ¡s baja)
     int valor_envido;   // Valor para el Envido (1-7, 0 para figuras)
 } Carta;
 
@@ -47,12 +47,12 @@ int obtener_valor_envido_mano(Jugador *j);
 void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido);
 void imprimir_puntos_totales(Jugador *j1, Jugador *j2);
 
-// --- UTILIDADES DE IMPRESIÓN ---
+// --- UTILIDADES DE IMPRESIÃ“N ---
 
 const char *nombre_palo[] = {"O", "C", "E", "B"};
 
 void imprimir_carta(Carta c) {
-    // Muestra el número real y la inicial del palo
+    // Muestra el nÃºmero real y la inicial del palo
     printf("(%d de %s)", c.numero, nombre_palo[c.palo]);
 }
 
@@ -66,7 +66,7 @@ void imprimir_mano(Jugador *j) {
 }
 
 void imprimir_puntos_totales(Jugador *j1, Jugador *j2) {
-    printf("\n--- PUNTUACIÓN DE LA PARTIDA ---\n");
+    printf("\n--- PUNTUACIÃ“N DE LA PARTIDA ---\n");
     printf("+----------------------+----------------------+\n");
     printf("| %-20s | %-20s |\n", j1->nombre, j2->nombre);
     printf("+----------------------+----------------------+\n");
@@ -74,7 +74,7 @@ void imprimir_puntos_totales(Jugador *j1, Jugador *j2) {
     printf("+----------------------+----------------------+\n");
 }
 
-// --- LÓGICA DE CARTAS ---
+// --- LÃ“GICA DE CARTAS ---
 
 // Asigna los valores de Truco y Envido a una carta
 void asignar_valores_carta(Carta *c) {
@@ -85,7 +85,7 @@ void asignar_valores_carta(Carta *c) {
         c->valor_envido = c->numero;
     }
 
-    // 2. Asignar valor de TRUCO (Jerarquía)
+    // 2. Asignar valor de TRUCO (JerarquÃ­a)
     int num = c->numero;
     Palo p = c->palo;
 
@@ -108,7 +108,7 @@ void inicializar_mazo(Carta mazo[]) {
     int indice = 0;
     for (int p = ORO; p < NUM_PALOS; p++) {
         for (int n = 1; n <= 12; n++) {
-            // Se saltan los números 8 y 9
+            // Se saltan los nÃºmeros 8 y 9
             if (n != 8 && n != 9) {
                 mazo[indice].palo = (Palo)p;
                 mazo[indice].numero = n;
@@ -119,7 +119,7 @@ void inicializar_mazo(Carta mazo[]) {
     }
 }
 
-// --- LÓGICA DE REPARTO Y MEZCLA ---
+// --- LÃ“GICA DE REPARTO Y MEZCLA ---
 
 // Algoritmo de Fisher-Yates para barajar
 void barajar(Carta mazo[], int n) {
@@ -135,13 +135,14 @@ void barajar(Carta mazo[], int n) {
 
 // Reparte las primeras 6 cartas del mazo a los jugadores
 void repartir(Carta mazo[], Jugador *j1, Jugador *j2) {
+    int idx = 0;
     for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
-        j1->mano[i] = mazo[i];
-        j2->mano[i] = mazo[i + CARTAS_POR_JUGADOR];
+        j1->mano[i] = mazo[idx++]; // carta para j1
+        j2->mano[i] = mazo[idx++]; // carta para j2
     }
 }
 
-// --- LÓGICA DE JUEGO (ENVIDO) ---
+// --- LÃ“GICA DE JUEGO (ENVIDO) ---
 
 // Calcula el puntaje de Envido de una mano
 int obtener_valor_envido_mano(Jugador *j) {
@@ -154,11 +155,11 @@ int obtener_valor_envido_mano(Jugador *j) {
                 // Hay 2 del mismo palo
                 int envido_actual = 20 + j->mano[i].valor_envido + j->mano[k].valor_envido;
 
-                // Verificar si la tercera también es del mismo palo (Flor, 3 cartas)
+                // Verificar si la tercera tambiÃ©n es del mismo palo (Flor, 3 cartas)
                 for (int l = k + 1; l < CARTAS_POR_JUGADOR; l++) {
                     if (j->mano[i].palo == j->mano[l].palo) {
-                        // ¡FLOR! Esto simplifica el Envido a solo el puntaje de la Flor
-                        // Para este código simple, usaremos 33 como ejemplo de Flor
+                        // Â¡FLOR! Esto simplifica el Envido a solo el puntaje de la Flor
+                        // Para este cÃ³digo simple, usaremos 33 como ejemplo de Flor
                         return 33; 
                     }
                 }
@@ -170,7 +171,7 @@ int obtener_valor_envido_mano(Jugador *j) {
         }
     }
     
-    // Si no hay cartas del mismo palo (o Flor no fue 33), el Envido es la carta más alta
+    // Si no hay cartas del mismo palo (o Flor no fue 33), el Envido es la carta mÃ¡s alta
     if (max_envido == 0) {
         for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
             if (j->mano[i].valor_envido > max_envido) {
@@ -203,7 +204,7 @@ void resolver_envido(Jugador *j1, Jugador *j2, int *puntos_envido) {
     }
 }
 
-// --- LÓGICA DE JUEGO (TRUCO) ---
+// --- LÃ“GICA DE JUEGO (TRUCO) ---
 
 // Determina el ganador de una baza (una carta contra otra)
 // Devuelve 1 si gana j1, 2 si gana j2, 0 si es empate.
@@ -223,12 +224,12 @@ void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido)
     int bazas_j2 = 0;
     int ganadores_baza[CARTAS_POR_JUGADOR] = {0, 0, 0};
     
-    // Simulación simplificada de la jugada de cartas (1 baza por carta)
+    // SimulaciÃ³n simplificada de la jugada de cartas (1 baza por carta)
     for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
         printf("\n--- BAZA %d ---\n", i + 1);
         
-        // Juegan las cartas más altas que les quedan
-        // (Esto es una simplificación; en el juego real el jugador elige)
+        // Juegan las cartas mÃ¡s altas que les quedan
+        // (Esto es una simplificaciÃ³n; en el juego real el jugador elige)
         Carta c1 = j1->mano[i]; 
         Carta c2 = j2->mano[i]; 
         
@@ -248,10 +249,10 @@ void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido)
             printf("Baza empatada.\n");
         }
         
-        // Lógica de corte: si alguien gana 2 bazas, se termina
+        // LÃ³gica de corte: si alguien gana 2 bazas, se termina
         if (bazas_j1 >= 2) break;
         if (bazas_j2 >= 2) break;
-        // La lógica de empate es más compleja en Truco (se define por la primera baza ganada)
+        // La lÃ³gica de empate es mÃ¡s compleja en Truco (se define por la primera baza ganada)
     }
 
     // Determinar el ganador final del TRUCO
@@ -268,16 +269,16 @@ void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido)
     }
 }
 
-// --- FUNCIÓN PRINCIPAL ---
+// --- FUNCIÃ“N PRINCIPAL ---
 
 int main() {
     Carta mazo[NUM_CARTAS];
     Jugador jugador1 = {1, "Jugador 1", {}, 0};
     Jugador jugador2 = {2, "Jugador 2", {}, 0};
     
-    // Inicialización
+    // InicializaciÃ³n
     inicializar_mazo(mazo);
-    printf("¡Trukini iniciado!\n");
+    printf("Â¡Trukini iniciado!\n");
     printf("Objetivo: %d puntos.\n\n", PUNTOS_FINALES);
     
     // Bucle principal del juego
@@ -290,11 +291,11 @@ int main() {
         barajar(mazo, NUM_CARTAS);
         repartir(mazo, &jugador1, &jugador2);
         
-        // Puntuación de la ronda actual
-        int puntos_truco_ronda = 1; // La mano vale 1 punto (o más si se canta Truco)
+        // PuntuaciÃ³n de la ronda actual
+        int puntos_truco_ronda = 1; // La mano vale 1 punto (o mÃ¡s si se canta Truco)
         int puntos_envido_ronda = 2; // Envido vale 2 si se acepta
         
-        // --- 1. MOSTRAR MANOS (En un juego real, esto no se mostraría) ---
+        // --- 1. MOSTRAR MANOS (En un juego real, esto no se mostrarÃ­a) ---
         imprimir_mano(&jugador1);
         printf("\n");
         imprimir_mano(&jugador2);
@@ -302,17 +303,17 @@ int main() {
 
         // --- 2. FASE DE APUESTAS SIMPLIFICADA (Envido y Truco) ---
 
-        // SIMULACIÓN: El Jugador 1 canta "Envido" y el Jugador 2 "Quiere"
+        // SIMULACIÃ“N: El Jugador 1 canta "Envido" y el Jugador 2 "Quiere"
         resolver_envido(&jugador1, &jugador2, &puntos_envido_ronda);
         
-        // SIMULACIÓN: El Jugador 1 canta "Truco" y el Jugador 2 "Quiere"
+        // SIMULACIÃ“N: El Jugador 1 canta "Truco" y el Jugador 2 "Quiere"
         printf("\n*** COMIENZA EL TRUCO (Apuesta: %d puntos) ***\n", puntos_truco_ronda);
         puntos_truco_ronda = 2; // Sube a 2 por el Truco
         
         // --- 3. FASE DE JUEGO DE CARTAS ---
         jugar_mano(&jugador1, &jugador2, &puntos_truco_ronda, &puntos_envido_ronda);
         
-        // --- 4. MOSTRAR PUNTUACIÓN ---
+        // --- 4. MOSTRAR PUNTUACIÃ“N ---
         imprimir_puntos_totales(&jugador1, &jugador2);
         
         printf("\nPresiona ENTER para la siguiente ronda...\n");
@@ -324,12 +325,13 @@ int main() {
     // --- 5. RESULTADO FINAL ---
     printf("\n\n###########################################\n");
     if (jugador1.puntos_partida >= PUNTOS_FINALES) {
-        printf("¡¡¡ GANADOR DE LA PARTIDA: %s !!!\n", jugador1.nombre);
+        printf("Â¡Â¡Â¡ GANADOR DE LA PARTIDA: %s !!!\n", jugador1.nombre);
     } else {
-        printf("¡¡¡ GANADOR DE LA PARTIDA: %s !!!\n", jugador2.nombre);
+        printf("Â¡Â¡Â¡ GANADOR DE LA PARTIDA: %s !!!\n", jugador2.nombre);
     }
     printf("###########################################\n");
 
     return 0;
 }
+
 
