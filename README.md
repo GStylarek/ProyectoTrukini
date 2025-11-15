@@ -48,11 +48,10 @@ Truco y juego:
 *-determinar_ganador_baza*: compara los valor_truco de dos cartas jugadas para saber quién gana una baza individual.
 
 --------------------------------------------------------------------------------------------------------------------------------
-
--Utilizamos los bucles for y while:
-
+Utilizamos los bucles for y while:
+--
 for:
-
+--
 *incializador_mazo*: Itera a través de los 4 palos y los 10 números de cartas (1 al 12, omitiendo 8 y 9) para crear las 40 cartas y
 asignarles sus valores.
 
@@ -62,8 +61,38 @@ algoritmo de Fisher-Yates.
 *repartir*: itera 3 veces para asignar las cartas del mazo a la mano de cada jugador.
 
 ---------------------------------------------------------------------------------------------------------------------------------
-
 while:
-
+--
 *main*: el bucle principal del juego se ejecuta mientras la puntuación de ningún jugador haya alcanzado los puntos necesarios para
 ganar (definidos por PUNTOS_FINALES). Este bucle asegura que se jueguen rondas sucesivas hasta que haya un gandor.
+
+------------------------------------------------------------------------------------
+Vectores 
+--
+En el código, los vectores se usan para representar colecciones de elementos del mismo tipo, como las cartas y la mano de un jugador.
+
+1. El Mazo de Cartas
+
+El mazo es el vector más grande, conteniendo todas las cartas del juego:
+
+Declaración: *Carta mazo[NUM_CARTAS];*
+
+Función: Almacena las 40 cartas posibles. Es un arreglo de 40 estructuras de tipo Carta.
+
+2. La Mano del Jugador
+   
+La mano de cada jugador es un pequeño vector que almacena las cartas que le fueron repartidas:
+
+Declaración: *Carta mano[CARTAS_POR_JUGADOR];* (dentro de la estructura *Jugador*)
+
+Función: Almacena las 3 cartas que tiene cada jugador en una ronda.
+
+3. Arreglos Auxiliares
+   
+También se usan vectores más pequeños para tareas de puntuación y control:
+
+Puntuación Total: *int puntos_totales[2]*.
+
+Ganadores de Baza: *int ganadores_baza[CARTAS_POR_JUGADOR]* (para llevar el registro de quién ganó cada una de las 3 bazas).
+
+
