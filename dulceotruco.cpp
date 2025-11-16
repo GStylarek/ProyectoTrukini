@@ -6,7 +6,7 @@
 // --- CONSTANTES Y ENUMS ---
 #define NUM_CARTAS 40
 #define CARTAS_POR_JUGADOR 3
-#define PUNTOS_FINALES 15 // Puntos para ganar la partida
+#define PUNTOS_FINALES 15 // Puntos para ganar la partida, si se desea se puede cambiar por 30
 
 // Enum para los Palos
 typedef enum {
@@ -18,13 +18,23 @@ typedef enum {
     NADA, TRUCO, ENVIDO
 } Accion;
 
+//Enum para el estado del truco (v1.1)
+typedef enum{
+	TRUCO_NINGUNO = 0,
+	TRUCO_CANTADO = 1,
+	RETRUCO_CANTADO = 2,
+	VALE4_CANTADO = 3
+}EstadoTruco;
+
+EstadoTruco estadoTruco = TRUCO_NINGUNO;
+
 // --- ESTRUCTURAS ---
 
 // Estructura de la Carta
 typedef struct {
     Palo palo;
     int numero;         // 1, 2, 3, 4, 5, 6, 7, 10, 11, 12
-    int valor_truco;    // Jerarquía de la carta (12 es el 1 de Espada, 1 es la más baja)
+    int valor_truco;    // Jerarquía de la carta 
     int valor_envido;   // Valor para el Envido (1-7, 0 para figuras)
 } Carta;
 
@@ -66,7 +76,7 @@ void imprimir_mano(Jugador *j) {
 }
 
 void imprimir_puntos_totales(Jugador *j1, Jugador *j2) {
-    printf("\n--- PUNTUACIÓN DE LA PARTIDA ---\n");
+    printf("\n--- PUNTUACION DE LA PARTIDA ---\n");
     printf("+----------------------+----------------------+\n");
     printf("| %-20s | %-20s |\n", j1->nombre, j2->nombre);
     printf("+----------------------+----------------------+\n");
@@ -121,12 +131,10 @@ void inicializar_mazo(Carta mazo[]) {
 
 // --- LÓGICA DE REPARTO Y MEZCLA ---
 
-// Algoritmo de Fisher-Yates para barajar
+// Algoritmo de Fisher-Yates para barajar, aqui hago un cambio para que solo baraje y no siembre. Porque puede producir malas mezclas
 void barajar(Carta mazo[], int n) {
-    srand(time(NULL));
     for (int i = n - 1; i > 0; i--) {
         int j = rand() % (i + 1);
-        // Intercambio
         Carta temp = mazo[i];
         mazo[i] = mazo[j];
         mazo[j] = temp;
@@ -146,41 +154,47 @@ void repartir(Carta mazo[], Jugador *j1, Jugador *j2) {
 
 // Calcula el puntaje de Envido de una mano
 int obtener_valor_envido_mano(Jugador *j) {
-    int max_envido = 0;
+    int flor = 0;
+    int envido = 0;
 
-    // Verificar pares de mismo palo
-    for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
-        for (int k = i + 1; k < CARTAS_POR_JUGADOR; k++) {
+    // Detectar Flor: las 3 cartas del mismo palo
+    if (j->mano[0].palo == j->mano[1].palo &&
+        j->mano[0].palo == j->mano[2].palo) {
+
+        flor = 20 +
+               j->mano[0].valor_envido +
+               j->mano[1].valor_envido +
+               j->mano[2].valor_envido;
+
+        return flor;  // Flor tiene prioridad
+    }
+
+    // Si no hay Flor, calcular Envido normal
+    int max_pareja = 0;
+
+    for (int i = 0; i < 3; i++) {
+        for (int k = i + 1; k < 3; k++) {
             if (j->mano[i].palo == j->mano[k].palo) {
-                // Hay 2 del mismo palo
-                int envido_actual = 20 + j->mano[i].valor_envido + j->mano[k].valor_envido;
+                int envido_pareja =
+                    20 + j->mano[i].valor_envido + j->mano[k].valor_envido;
 
-                // Verificar si la tercera también es del mismo palo (Flor, 3 cartas)
-                for (int l = k + 1; l < CARTAS_POR_JUGADOR; l++) {
-                    if (j->mano[i].palo == j->mano[l].palo) {
-                        // ¡FLOR! Esto simplifica el Envido a solo el puntaje de la Flor
-                        // Para este código simple, usaremos 33 como ejemplo de Flor
-                        return 33; 
-                    }
-                }
-                
-                if (envido_actual > max_envido) {
-                    max_envido = envido_actual;
-                }
-            }
-        }
-    }
-    
-    // Si no hay cartas del mismo palo (o Flor no fue 33), el Envido es la carta más alta
-    if (max_envido == 0) {
-        for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
-            if (j->mano[i].valor_envido > max_envido) {
-                max_envido = j->mano[i].valor_envido;
+                if (envido_pareja > max_pareja)
+                    max_pareja = envido_pareja;
             }
         }
     }
 
-    return max_envido;
+    // si no hubo pareja, el envido es la carta más alta
+    if (max_pareja == 0) {
+        int max_carta = 0;
+        for (int i = 0; i < 3; i++)
+            if (j->mano[i].valor_envido > max_carta)
+                max_carta = j->mano[i].valor_envido;
+
+        return max_carta;
+    }
+
+    return max_pareja;
 }
 
 // Resuelve la apuesta de Envido
@@ -273,16 +287,30 @@ void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido)
 
 int main() {
     Carta mazo[NUM_CARTAS];
-    Jugador jugador1 = {1, "Jugador 1", {}, 0};
-    Jugador jugador2 = {2, "Jugador 2", {}, 0};
+    Jugador jugador1 = {1, "", {}, 0};
+    Jugador jugador2 = {2, "CPU", {}, 0};
+    
+    //Pedir nombre al jugador
+    printf("Ingresa tu nombre: ");
+    fgets(jugador1.nombre, 20, stdin);
+    jugador1.nombre[strcspn(jugador1.nombre, "\n")] = '\0'; //sacar salto de línea
     
     // Inicialización
     inicializar_mazo(mazo);
+    srand((unsigned) time(NULL)); //<<--- aquí movi el srand, para sembrar una sola vez
     printf("¡Trukini iniciado!\n");
     printf("Objetivo: %d puntos.\n\n", PUNTOS_FINALES);
     
     // Bucle principal del juego
     while (jugador1.puntos_partida < PUNTOS_FINALES && jugador2.puntos_partida < PUNTOS_FINALES) {
+        
+        //LIMPIAR CONSOLA
+        
+        #ifdef _WIN32
+              system("cls");
+              #else
+              system("clear");
+        #endif
         
         printf("===========================================\n");
         printf("              NUEVA RONDA\n");
@@ -301,14 +329,187 @@ int main() {
         imprimir_mano(&jugador2);
         printf("\n");
 
-        // --- 2. FASE DE APUESTAS SIMPLIFICADA (Envido y Truco) ---
+        // --- 2. FASE DE APUESTAS (Envido y Truco) ---
 
-        // SIMULACIÓN: El Jugador 1 canta "Envido" y el Jugador 2 "Quiere"
-        resolver_envido(&jugador1, &jugador2, &puntos_envido_ronda);
+        // Camtar Envido
+        int opcion;
+        int puntos_envido = 0;
+        int estadoEnvido = 0;
+        int envido_aceptado = 0; //Fix bug de la finalizacion de ronda en el envido y suma de puntos
         
-        // SIMULACIÓN: El Jugador 1 canta "Truco" y el Jugador 2 "Quiere"
-        printf("\n*** COMIENZA EL TRUCO (Apuesta: %d puntos) ***\n", puntos_truco_ronda);
-        puntos_truco_ronda = 2; // Sube a 2 por el Truco
+        printf("\nDeseas cantar envido?\n");
+        
+        printf("1) No\n");
+        printf("2) Envido\n");
+        printf("3) Real Envido\n");
+        printf("4) Falta Envido\n");
+        printf("Elige: ");
+        scanf("%d", &opcion);
+        getchar();
+        //agregar el if anidado de envido,envido,real envido, falta envido
+        
+        if(opcion == 2){
+        	printf("\n%s dice: le canto Envido compa!.\n", jugador1.nombre);
+        	estadoEnvido = 1;
+        	puntos_envido = 2;
+        	
+        	int prob = rand() % 100;
+        	if (prob < 70){
+        		printf("El rival dice: Quiero!\n");
+        		envido_aceptado = 1;
+        	} else {
+        		printf("El rival dice: NO quiero...\n");
+        	    jugador1.puntos_partida +=1;
+				printf("%s suma 1 punto.\n", jugador1.nombre); 
+				printf("\nPresiona ENTER para la siguiente ronda...\n");
+				getchar();
+        	}
+        } else if (opcion == 3){
+        	printf("\nREAL ENVIDO hermano!\n");
+        	estadoEnvido = 3;
+        	puntos_envido = 3;
+        	
+        	int prob = rand() % 100;
+        	if(prob < 50){
+        		printf("El rival dice: QUIERO!!\n");
+        		envido_aceptado = 1;
+        	} else {
+        		printf("El rival dice: NO quiero...\n");
+        		jugador1.puntos_partida += 1; //Real envido directo no querido = 1
+        		printf("%s suma 1 punto.\n", jugador1.nombre);
+        		printf("\nPresiona ENTER para la siguiente ronda...\n");
+        		getchar();
+        		
+        	}
+        } else if (opcion == 4){
+        	printf("\nAchica que te canto la FALTA ENVIDO!!\n");
+			estadoEnvido = 4;
+			
+			int prob = rand() % 100;
+			if (prob < 45){
+				printf("El rival dice: Oa TATA, QUIERO que p*ta no voy a querer!!\n");
+				envido_aceptado = 1;
+				puntos_envido = 30 - jugador1.puntos_partida;
+			} else {
+				printf("El rival dice: me achico nomas... NO quiero!\n");
+				jugador1.puntos_partida += 1;
+				printf("%s suma 1 punto. \n", jugador1.nombre);
+				printf("\nPresiona ENTER para la siguiente ronda...\n");
+				getchar();
+			}	
+        }
+        
+        if (envido_aceptado == 1){
+        	int puntaje_j1 = obtener_valor_envido_mano(&jugador1);
+        	int puntaje_j2 = obtener_valor_envido_mano(&jugador2);
+        	
+        	printf("\nTu envido es: %d\n", puntaje_j1);
+        	printf("Envido del rival: %d\n", puntaje_j2);
+        	
+        	if (puntaje_j1 > puntaje_j2){
+        		jugador1.puntos_partida += puntos_envido;
+        		printf("\nGANASTE el Envido! +%d puntos.\n", puntos_envido);
+        	} else {
+        		jugador2.puntos_partida += puntos_envido;
+        		printf("\nPerdiste el Envido...el rival suma %d puntos.\n", puntos_envido);
+        	}
+        	printf("\nPresiona ENTER para continuar...\n");
+        	getchar();
+        }
+        
+        //------ OPCION DE CANTAR TRUCO -------
+	
+		estadoTruco = TRUCO_NINGUNO;
+		
+		printf("\nDeseas cantar truco?\n");
+		printf("1) No\n");
+		printf("2) Truco\n");
+		printf("Elige: ");
+		scanf("%d",&opcion);
+		getchar();
+		
+		if (opcion == 2){
+			printf("\nCantas TRUCO.\n");
+			estadoTruco= TRUCO_CANTADO;
+			
+						//Respuesta del rival (IA simple)
+			int prob = rand() % 100;
+			if (prob < 70){
+				printf("El rival dice: QUIERO!\n");
+				puntos_truco_ronda = 2;
+			} else {
+			printf("El rival dice: NO quiero...\n");
+			jugador1.puntos_partida +=1;
+			printf ("%s suma 1 punto. \n", jugador1.nombre);
+			imprimir_puntos_totales(&jugador1, &jugador2);
+			printf("\nPresiona ENTER para la siguiente ronda...\n");
+			getchar();
+			continue;	
+			}
+			
+			if(estadoTruco == TRUCO_CANTADO){
+				printf("\nDeseas cantar Retruco?\n");
+				printf("1) No\n");
+				printf("2) Retruco!\n");
+				printf("Elegi: ");
+				scanf("%d",&opcion);
+				getchar();
+				
+				if (opcion == 2){
+					printf("\nRETRUCO!\n");
+					estadoTruco = RETRUCO_CANTADO;
+					
+					int prob = rand() %100;
+					if (prob < 50){
+						printf("El rival dice: QUIERO LA PUCHA!\n");
+						puntos_truco_ronda = 3;
+					}else {
+					printf("El rival dice: NO quiero...\n");
+					jugador1.puntos_partida += 2;
+					printf("%s suma 2 puntos.\n", jugador1.nombre);
+					imprimir_puntos_totales(&jugador1, &jugador2);
+					printf("\nPresiona ENTER para la siguiente ronda...\n");
+					getchar();
+					continue;
+			     	}
+			     	
+			     	
+					if (estadoTruco == RETRUCO_CANTADO){
+						printf("\nDeseas cantar VALE 4?\n");
+		               	printf("1) NO\n");
+		            	printf("2) QUIERO VALE 4!!\n");
+		            	printf("Elige: ");
+		            	scanf("%d", &opcion);
+			            getchar();
+			            
+			            if (opcion == 2){
+							printf("\nCantas VALE CUATRO!\n");
+				            estadoTruco = VALE4_CANTADO;
+				
+				            int prob = rand() % 100;
+							
+							if(prob<40){
+								printf("El rival dice: QUIERO!!\n");
+					            puntos_truco_ronda = 4;
+							} else {
+									printf("El rival dice: No che, no quiero...\n");
+					                jugador1.puntos_partida += 3;
+				                	printf("%s suma 3 puntos.\n", jugador1.nombre);
+				                	imprimir_puntos_totales(&jugador1, &jugador2);
+					                printf("\nPresiona ENTER para la siguiente ronda...\n");
+					                getchar();
+					                continue;
+							}
+							
+							
+						}
+					}
+					
+				}
+			}
+
+		}  
+		
         
         // --- 3. FASE DE JUEGO DE CARTAS ---
         jugar_mano(&jugador1, &jugador2, &puntos_truco_ronda, &puntos_envido_ronda);
@@ -318,20 +519,22 @@ int main() {
         
         printf("\nPresiona ENTER para la siguiente ronda...\n");
         // Limpiar el buffer de entrada para esperar un ENTER
-        while (getchar() != '\n');
-        getchar(); 
+        fflush(stdout);
+        getchar();
+      
     }
     
     // --- 5. RESULTADO FINAL ---
     printf("\n\n###########################################\n");
     if (jugador1.puntos_partida >= PUNTOS_FINALES) {
-        printf("¡¡¡ GANADOR DE LA PARTIDA: %s !!!\n", jugador1.nombre);
+        printf("GANADOR DE LA PARTIDA: %s !!!\n", jugador1.nombre);
     } else {
-        printf("¡¡¡ GANADOR DE LA PARTIDA: %s !!!\n", jugador2.nombre);
+        printf("GANADOR DE LA PARTIDA: %s !!!\n", jugador2.nombre);
     }
     printf("###########################################\n");
 
     return 0;
 }
+
 
 
