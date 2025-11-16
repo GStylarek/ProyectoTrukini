@@ -97,11 +97,62 @@ Ganadores de Baza: *int ganadores_baza[CARTAS_POR_JUGADOR]* (para llevar el regi
 
 
 ----------------------------------------------------------------------------------------------------------------
-V1.0
+V1.0(FASE 1)
 ----------------------------------------------------------------------------------------------------------------
 En la primer versión del código notamos que nuestro código necesitaba varias mejoras:
 
 1. Limpiar la consola por cada nueva ronda.
 2. Eliminar el consumo extra de líneas
-3. Manejo más correcto de "Flor".
+3. Manejo más correcto de las instancias.
+4. Más dinamismo.
+5. Más complejidad, el código si bien cumple con las consignas, es muy aburrido y monotono.
+
+  
+   Fuentes:
+   --
+  |Flavio Copes| The C Beginner's Handbook: *https://www.freecodecamp.org/news/the-c-beginners-handbook/*
+   
+ |Brian W. Kernighan, Dennis M. Ritchie|EL LENGUAJE DE PROGRAMACION C, Segunda Edicion: *https://frrq.cvg.utn.edu.ar/pluginfile.php/13741/mod_resource/content/0/El-lenguaje-de-programacion-C-2-ed-kernighan-amp-ritchie.pdf*
+   
+  |ProgramaciónATS| Programación en C: *https://youtube.com/playlist?list=PLWtYZ2ejMVJmUTNE2QVaCd1y_6GslOeZ6&si=mbGVRJU1UQ3VLRop*
+   
+  |ProgramaTutos| Programación en C desde cero: *https://youtu.be/-4Aj658ontU?si=BI5llpbJgr6KXZSU*
+
+
+V1.1(FASE 2)
+--
+Una vez lograda estas mejoras menores, el código funcionaba de manera optima, pero quisimos ir un paso más allá... Luego de analizar algunos videos tutoriales, visitar algunos blogs y sostenernos un poco de la ayuda de GPT-5.1, decidimos que queriamos cambiar el enfoque y el funcionamiento de nuestro simulador.
+Queriamos cambiar el enfoque de "Simulación automátizada", y darle la posibilidad de que el usuario pueda jugar contra la CPU utilizando una 'IA Básica' que se manejaba a partir de probabilidades.
+
+Para esto agregamos a la fase de apuestas una serie de IF-ELSE anidados, en donde el jugador puede decidir si cantar jugadas como "Envido";"Real envido";"Truco";"Retruco";etc. Dentro de estas estructuras le pedimos ayuda al GPT-5.1: queriamos que nos enseñe a crear la posibilidad de que la CPU pueda elegir si tomaba la apuesta o no.
+
+Logros:
+
+-Logramos tener la posibilidad de jugar contra la CPU.
+
+-Jugadas de Envido.
+
+-Jugadas de Truco.
+Para esto definimos una variable global *"typedef enum"*, para comunicar el estado del truco *{TRUCO_NINGUNO, TRUCO_CANTADO, RETRUCO_CANTADO, VALE4_CANTADO}*
+
+Aunque esto trajo consigo varios bugs que necesitaban ser atendidos:
+
+-Cuando la CPU rechazaba el envido, la ronda quedaba finalizada. Lo correcto era que al rechazar esto, se pase a la instacia de TRUCO.
+
+-Cuando se pasaba a la instancia de la apuesta del TRUCO, si la CPU rechazaba no nos imprimia la tabla de puntaje, cuando lo mas acertado es que cada que finalizara una ronda, está se imprimiera.
+
+V1.2
+--
+
+Fix I| Bug de finalización de ronda cuando la CPU rechazaba el envido: eso se producía debido a que en las estructuras IF-ELSE de los ENVIDOS, al final del ELSE, colocaba un *continue;*. Esto hacía que la máquina tomara como que se continua a la siguiente ronda.
+
+Fix II| Al fixear esto, cuando cantaba {REAL ENVIDO}, {FALTA ENVIDO} o {ENVIDO-ENVIDO}; y la CPU no aceptaba, se realizaba la apuesta igualmente. Lo correcto sería que se sume solo 1 punto al que canto el envido.
+
+Fix III| La impresión de la tabla fue fácil solucionar, debido a que fue tan fácil como colocar el void *imprimir_puntos_totales(&jugador1, &jugador2);* al final de cada IF-ELSE de los cantos de TRUCO.
+
+Nuevos Objetivos:
+
+1. Lograr que haya turnos donde la CPU sea "mano" y tome la iniciativa de cantar las jugadas.
+2. Intercalar esto, un turno empieza el jugador, otro turno la CPU.
+3. Que las jugadas sean realistas, que la CPU tenga la probabilidad de elevar la apuesta del jugador. (TRUCO-RETRUCO, RETRUCO-VALE 4)
 
