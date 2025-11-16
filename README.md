@@ -128,6 +128,8 @@ Para esto agregamos a la fase de apuestas una serie de IF-ELSE anidados, en dond
 
 Logros:
 
+-Opción de que el usuario coloque el nombre que quisiera tener.
+
 -Logramos tener la posibilidad de jugar contra la CPU.
 
 -Jugadas de Envido.
