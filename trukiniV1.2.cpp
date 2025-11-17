@@ -67,11 +67,24 @@ void imprimir_carta(Carta c) {
 }
 
 void imprimir_mano(Jugador *j) {
+
+    if (strcmp(j->nombre, "CPU") == 0) {
+        printf("Mano de CPU:\n");
+        for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
+            printf(" [%d]: (X)\n", i+1);
+        }
+        return;
+    }
+
+    // Mano del jugador real
     printf("Mano de %s:\n", j->nombre);
     for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
         printf(" [%d]: ", i + 1);
         imprimir_carta(j->mano[i]);
-        printf(" (T:%d | E:%d)\n", j->mano[i].valor_truco, j->mano[i].valor_envido);
+        printf(" (T:%d | E:%d)\n",
+            j->mano[i].valor_truco,
+            j->mano[i].valor_envido
+        );
     }
 }
 
@@ -197,27 +210,6 @@ int obtener_valor_envido_mano(Jugador *j) {
     return max_pareja;
 }
 
-// Resuelve la apuesta de Envido
-void resolver_envido(Jugador *j1, Jugador *j2, int *puntos_envido) {
-    int envido1 = obtener_valor_envido_mano(j1);
-    int envido2 = obtener_valor_envido_mano(j2);
-    
-    printf("\n*** RESOLUCION DEL ENVIDO ***\n");
-    printf("%s canta %d de envido. | %s canta %d de envido.\n", j1->nombre, envido1, j2->nombre, envido2);
-
-    if (envido1 > envido2) {
-        printf("Gana %s con %d Suma %d puntos.\n", j1->nombre, envido1, *puntos_envido);
-        j1->puntos_partida += *puntos_envido;
-    } else if (envido2 > envido1) {
-        printf("Gana %s con %d Suma %d puntos.\n", j2->nombre, envido2, *puntos_envido);
-        j2->puntos_partida += *puntos_envido;
-    } else {
-        // En caso de empate, gana el que es "Mano" (el jugador 1 en este caso)
-        printf("Empate Gana %s (Mano) con %d. Suma %d puntos.\n", j1->nombre, envido1, *puntos_envido);
-        j1->puntos_partida += *puntos_envido;
-    }
-}
-
 // --- LÓGICA DE JUEGO (TRUCO) ---
 
 // Determina el ganador de una baza (una carta contra otra)
@@ -232,56 +224,97 @@ int determinar_ganador_baza(Carta c1, Carta c2) {
     }
 }
 
-// Bucle principal de la mano
+//MEJORA V1.3: JUGAR BAZAS DE MANERA MANUAL VS. LA CPU:
+
+void eliminar_carta(Carta mano[], int index){
+	for(int i = index; i < CARTAS_POR_JUGADOR - 1; i++){
+		mano[i] = mano[i + 1];
+	}
+}
+
+// Bucle principal de la mano V1.3: (((MANUAL)))
 void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido) {
+	int cartas_restantes = 3;
     int bazas_j1 = 0;
     int bazas_j2 = 0;
-    int ganadores_baza[CARTAS_POR_JUGADOR] = {0, 0, 0};
+    int primera_ganada = 0;
     
-    // Simulación simplificada de la jugada de cartas (1 baza por carta)
-    for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
-        printf("\n--- BAZA %d ---\n", i + 1);
-        
-        // Juegan las cartas más altas que les quedan
-        // (Esto es una simplificación; en el juego real el jugador elige)
-        Carta c1 = j1->mano[i]; 
-        Carta c2 = j2->mano[i]; 
-        
-        printf("%s juega ", j1->nombre); imprimir_carta(c1);
-        printf(" vs. %s juega ", j2->nombre); imprimir_carta(c2);
-        printf("\n");
-
-        ganadores_baza[i] = determinar_ganador_baza(c1, c2);
-
-        if (ganadores_baza[i] == 1) {
-            bazas_j1++;
-            printf("Baza ganada por %s.\n", j1->nombre);
-        } else if (ganadores_baza[i] == 2) {
-            bazas_j2++;
-            printf("Baza ganada por %s.\n", j2->nombre);
-        } else {
-            printf("Baza empatada.\n");
-        }
-        
-        // Lógica de corte: si alguien gana 2 bazas, se termina
-        if (bazas_j1 >= 2) break;
-        if (bazas_j2 >= 2) break;
-        // La lógica de empate es más compleja en Truco (se define por la primera baza ganada)
+    while (cartas_restantes > 0){
+    	
+    	printf("\n=== BAZA %d ===\n", 4 - cartas_restantes);
+    	
+    	//eleccion jugadro
+    	printf("\nTu mano:\n");
+    	for(int i = 0; i < cartas_restantes; i++){
+    		printf("[%d] ", i+1);
+    		imprimir_carta(j1->mano[i]);
+    		printf("\n");
+    	}
+    	
+    	int eleccion;
+    	do{
+    		printf("Elegi una carta (1-%d): ", cartas_restantes);
+    		scanf ("%d", &eleccion);
+    		getchar();
+    	} while (eleccion < 1 || eleccion > cartas_restantes);
+    	
+    	Carta carta_j1 = j1->mano[eleccion - 1];
+    	eliminar_carta(j1->mano, eleccion -1);
+    	
+    	//Como primera medida voy a hacer que la CPU juegue las cartas al azar, despues veo como configurarla para que sea inteligente.
+    	
+    	int idx_cpu = rand() % cartas_restantes;
+    	Carta carta_j2 = j2->mano[idx_cpu];
+    	eliminar_carta(j2->mano, idx_cpu);
+    	
+    	cartas_restantes--;
+    	
+    	printf("\n%s juega ", j1->nombre); imprimir_carta(carta_j1);
+    	printf(" vs CPU juega ");
+    	imprimir_carta(carta_j2);
+    	printf("\n");
+    	
+    	int ganador = determinar_ganador_baza(carta_j1, carta_j2);
+    	
+    	if (ganador == 1){
+    		bazas_j1++;
+    		printf("Ganaste la baza.\n");
+    		if(primera_ganada == 0) primera_ganada = 1;
+    	} else if (ganador == 2){
+    		bazas_j2++;
+    		printf("La CPU gana la baza.\n");
+    		if(primera_ganada == 0) primera_ganada = 2;
+    	} else {
+    		printf("Baza empatada.\n");
+    	}
+    	
+    	if(bazas_j1 == 2 || bazas_j2 == 2) break;
     }
-
-    // Determinar el ganador final del TRUCO
+    
+    // ==- RESOLUCION DEL TRUCO -==
     printf("\n*** RESOLUCION DEL TRUCO ***\n");
-    if (bazas_j1 > bazas_j2) {
-        printf("%s gana la mano de Truco Suma %d puntos.\n", j1->nombre, *puntos_truco);
-        j1->puntos_partida += *puntos_truco;
-    } else if (bazas_j2 > bazas_j1) {
-        printf("%s gana la mano de Truco Suma %d puntos.\n", j2->nombre, *puntos_truco);
-        j2->puntos_partida += *puntos_truco;
-    } else {
-        printf("Mano empatada Se define por la primera baza, gana %s. Suma %d puntos.\n", j1->nombre, *puntos_truco);
-        j1->puntos_partida += *puntos_truco;
+    
+    if (bazas_j1 > bazas_j2){
+    	printf("%s gana la mano y suma %d puntos.\n", j1->nombre, *puntos_truco);
+    	j1->puntos_partida += *puntos_truco;
+    }else if (bazas_j2 > bazas_j1){
+    	printf("La CPU gana la mano y suma %d puntos.\n", *puntos_truco);
+    	j2->puntos_partida += *puntos_truco;
+    }else{
+    	//Empate -> gana la primera baza
+    	if(primera_ganada == 1){
+    		printf("Empate. Ganas por la primera baza. +%d puntos.\n", *puntos_truco);
+    		j1->puntos_partida += *puntos_truco;
+    	} else {
+    		printf("Empate. Gana CPU por primera baza. +%d puntos.\n", *puntos_truco);
+    		j2->puntos_partida += *puntos_truco;
+    	}
     }
+    
 }
+
+//variable global para alternar manos entre la CPU y el jugadror
+int mano = 1;
 
 // --- FUNCIÓN PRINCIPAL ---
 
@@ -318,6 +351,15 @@ int main() {
         
         barajar(mazo, NUM_CARTAS);
         repartir(mazo, &jugador1, &jugador2);
+           
+      // Alternar mano
+        if (mano == 1){
+            mano = 2;
+		} else {
+		    mano = 1;
+		}
+        printf("La mano es de: %s\n", (mano == 1 ? jugador1.nombre : jugador2.nombre));
+
         
         // Puntuación de la ronda actual
         int puntos_truco_ronda = 1; // La mano vale 1 punto (o más si se canta Truco)
@@ -410,8 +452,13 @@ int main() {
         		jugador1.puntos_partida += puntos_envido;
         		printf("\nGANASTE el Envido! +%d puntos.\n", puntos_envido);
         	} else {
-        		jugador2.puntos_partida += puntos_envido;
-        		printf("\nPerdiste el Envido...el rival suma %d puntos.\n", puntos_envido);
+        		if (mano == 1){
+        			jugador1.puntos_partida += puntos_envido;
+        			printf("Empate de envido. Gana %s por ser mano.\n", jugador1.nombre);
+        		} else {
+        			jugador2.puntos_partida += puntos_envido;
+        			printf("Empate de envido. Gana %s por ser mano.\n", jugador2.nombre);
+        		}
         	}
         	printf("\nPresiona ENTER para continuar...\n");
         	getchar();
@@ -535,6 +582,3 @@ int main() {
 
     return 0;
 }
-
-
-
