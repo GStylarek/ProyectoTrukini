@@ -7,11 +7,17 @@ Programación I, Tecnicatura en Infraestructura Informática/Desarrollo de Softw
 Lenguaje de programación: C
 ------------------------------------------------------------------------------------
 La idea del proyecto es lograr simular un juego de cartas argentino llamado "truco", con todas sus caracteristicas y reglas: 
+
 -Reconocer e identificar las distintas cartas y sus respectivos valores.
+
 -Barajar el mazo de 40 cartas.
+
 -Repartir entre dos jugadores, 3 cartas para cada uno.
+
 -Permitir las diferentes "jugadas" de las reglas: truco, retruco, vale 4, envido, real envido, falta envido.
+
 -Imprimir que jugador ganó la ronda y cuantos puntos se lleva cada uno.
+
 -Imprimir en un cuadro una matriz donde se vayan guardando la cantidad de puntos.
 
 ------------------------------------------------------------------------------------
