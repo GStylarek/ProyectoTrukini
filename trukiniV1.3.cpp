@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <stdlib.h> //nuevo
+#include <time.h> //nuevo
 #include <string.h>
 
 // --- CONSTANTES Y ENUMS ---
@@ -659,6 +659,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
