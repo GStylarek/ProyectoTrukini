@@ -170,13 +170,16 @@ V1.3
 Fix I| Bug de puntos de envido: con el cambio del sistema de envido, resolvimos un bug que hacía que en algunos casos el resultado sea "empate" a pesar de tener una diferencia de puntos.
 Fix II| Pulimos mejor el menú de jugadas, ahora cuando la mano es de la CPU, no nos permite cantar ENVIDO a nosotros primero.
 
-- Reemplazamos el sistema de ENVIDO y TRUCO, dejandolo más realista.
+- Reemplazamos el sistema del TRUCO, dejandolo más realista.
   
 - Logramos intercalar las "manos" y que la CPU tome la iniciativa para cantar jugadas.
   
 - Con el nuevo sistema, logramos pulir la inteligencia artificial de la CPU, esto permite que:
-  1. Acepte y/o eleve las apuestas tanto en la instancia de ENVIDO, como en el de TRUCO.
+  1. Acepte y/o eleve las apuestas tanto en la instancia de TRUCO.
   2. La CPU, si bien tiene una inteligencia básica, el juego es bastante fluido y llevadero.
+  3. Logramos resumir un poco mas el código, eliminando enums y otras estructuras que quedaron obsoletas con esta actualización.
+
+  A este punto el juego es completamente funcional, dinamico y cumple su función de entretener. Aún queda mecanicas que pulir, asi que esta no seria la versión "final".
  
  
  
