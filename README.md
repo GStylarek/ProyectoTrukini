@@ -43,15 +43,15 @@ Envido y Puntuación:
 *-obetener_valor_envido_mano*: calcula el puntaje de envido más alto que tiene un jugador en su mano (inlcuyendo la logica de
 20 + suma de cartas y la detección de Flor).
 
-*-resolver_envido*: compara los puntajes de envido de ambos jugadores y asigna los puntos de la apuesta al ganador.
+- *resolver_envido*: compara los puntajes de envido de ambos jugadores y asigna los puntos de la apuesta al ganador.
 
-*-imprimir_puntos_totales:* muestra la tabla (matriz) de puntuación actual de ambos jugadores en la consola.
+- *imprimir_puntos_totales:* muestra la tabla (matriz) de puntuación actual de ambos jugadores en la consola.
 
 --------------------------------------------------------------------------------------------------------------------------------
 
 Truco y juego:
 
-*-determinar_ganador_baza*: compara los valor_truco de dos cartas jugadas para saber quién gana una baza individual.
+- *determinar_ganador_baza*: compara los valor_truco de dos cartas jugadas para saber quién gana una baza individual.
 
 --------------------------------------------------------------------------------------------------------------------------------
 Utilizamos los bucles for y while:
