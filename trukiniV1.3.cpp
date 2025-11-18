@@ -53,12 +53,12 @@ int obtener_valor_envido_mano(Jugador *j);
 void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido);
 void imprimir_puntos_totales(Jugador *j1, Jugador *j2);
 
-// --- UTILIDADES DE IMPRESIÓN ---
+// --- UTILIDADES DE IMPRESION ---
 
 const char *nombre_palo[] = {"O", "C", "E", "B"};
 
 void imprimir_carta(Carta c) {
-    // Muestra el número real y la inicial del palo
+    // Muestra el numero real y la inicial del palo
     printf("(%d de %s)", c.numero, nombre_palo[c.palo]);
 }
 
@@ -93,7 +93,7 @@ void imprimir_puntos_totales(Jugador *j1, Jugador *j2) {
     printf("+----------------------+----------------------+\n");
 }
 
-// --- LÓGICA DE CARTAS ---
+// --- LOGICA DE CARTAS ---
 
 // Asigna los valores de Truco y Envido a una carta
 void asignar_valores_carta(Carta *c) {
@@ -104,7 +104,7 @@ void asignar_valores_carta(Carta *c) {
         c->valor_envido = c->numero;
     }
 
-    // 2. Asignar valor de TRUCO (Jerarquía)
+    // 2. Asignar valor de TRUCO (Jerarquia)
     int num = c->numero;
     Palo p = c->palo;
 
@@ -140,7 +140,7 @@ void inicializar_mazo(Carta mazo[]) {
     }
 }
 
-// --- LÓGICA DE REPARTO Y MEZCLA ---
+// --- LOGICA DE REPARTO Y MEZCLA ---
 
 // Algoritmo de Fisher-Yates para barajar, aqui hago un cambio para que solo baraje y no siembre. Porque puede producir malas mezclas
 void barajar(Carta mazo[], int n) {
@@ -161,7 +161,7 @@ void repartir(Carta mazo[], Jugador *j1, Jugador *j2) {
     }
 }
 
-// --- LÓGICA DE JUEGO (ENVIDO) ---
+// --- LOGICA DE JUEGO (ENVIDO) ---
 
 // Calcula el puntaje de Envido de una mano
 int obtener_valor_envido_mano(Jugador *j) {
@@ -659,6 +659,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
