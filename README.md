@@ -192,7 +192,87 @@ Fix II| Pulimos mejor el menú de jugadas, ahora cuando la mano es de la CPU, no
   - Aumentar la dificultad de la CPU.
     
        
- 
- 
- 
+ |CODIGO VERSION FINAL|
+--
 
+ 1. Estructuras de Datos (La base del juego)
+El código organiza la información en dos estructuras principales (structs) y dos enumeraciones (enums):
+
+- typedef enum { ORO, COPA, ESPADA, BASTO ... } Palo; Define los 4 palos de la baraja española para facilitar la comparación y asignación.
+
+- typedef struct { ... } Carta; Es la unidad fundamental. Cada carta tiene:
+
+- palo y numero: Identidad visual (ej. 1 de Espada).
+
+valor_truco: Un entero que representa la jerarquía en el juego. Por ejemplo, el 1 de Espada tiene un valor de 14 (el más alto) y un 4 tiene un valor de 1 (el más bajo). Esto evita tener que programar if complejos durante la partida; simplemente se compara carta1.valor_truco > carta2.valor_truco.
+
+valor_envido: El valor numérico para sumar en el envido (ej. un 12 vale 0, un 7 vale 7).
+
+typedef struct { ... } Jugador; Representa al usuario y a la CPU. Guarda el nombre, la mano actual (array de 3 cartas) y los puntos acumulados en la partida.
+
+
+2. Inicialización y Lógica de Cartas
+Antes de jugar, el código prepara el terreno mediante dos funciones clave:
+
+inicializar_mazo y asignar_valores_carta: Aquí es donde se definen las reglas del Truco. El código recorre los palos y números, omite los 8 y 9, y asigna el valor_truco manualmente según el reglamento (Ancho de espada > Ancho de basto > 7 de espada, etc.).
+
+barajar: Utiliza el algoritmo Fisher-Yates para mezclar el array de cartas de manera eficiente y aleatoria.
+
+
+3. El Flujo Principal (main)
+El juego corre dentro de un bucle while que continúa hasta que uno de los jugadores alcanza los PUNTOS_FINALES (definido en 15). La secuencia de una ronda es:
+
+Limpieza y Reparto: Se limpia la consola, se baraja y se reparten 3 cartas a cada uno.
+
+Alternancia de Mano: Se usa la variable global mano (1 o 2) para saber quién "es mano" (quien juega primero y gana los empates de envido).
+
+Fase de Envido:
+
+Se evalúa si se canta Envido.
+
+La función obtener_valor_envido_mano calcula los puntos automáticamente, detectando si hay "Flor" (3 del mismo palo) o sumando la mejor pareja del mismo palo + 20.
+
+El código permite cantar Envido, Real Envido y Falta Envido.
+
+Fase de Truco (Cantos):
+
+Se llama a cantar_truco. Aquí los jugadores pueden subir la apuesta (Truco, Retruco, Vale 4).
+
+Si alguien dice "No quiero", la ronda termina inmediatamente y se suman los puntos al ganador.
+
+Fase de Bazas (Jugar las cartas):
+
+Si el Truco fue querido (o no se cantó nada), se ejecuta jugar_mano.
+
+4. Inteligencia Artificial (La CPU)
+La "IA" de la CPU es sencilla y se basa en probabilidades aleatorias (RNG):
+
+En el Envido: Calcula sus puntos. Si tiene más de 31 puntos, tiene un 80% de probabilidad de cantar envido. Si tiene menos, la probabilidad baja drásticamente (simulando que a veces miente o "bluffea" con puntos bajos).
+
+En el Truco:
+
+Para cantar o responder, usa rand() % 100. Por ejemplo, si le cantan Truco, tiene un 50% de chance de querer, 30% de no querer y un porcentaje restante de revirar con Retruco.
+
+Jugando Cartas (jugar_mano):
+
+Actualmente, la CPU juega una carta al azar (rand() % cartas_restantes). No analiza si está matando la carta del jugador o si está desperdiciando un ancho de espadas.
+
+5. Mecánica de Juego (jugar_mano)
+Esta función maneja el "mejor de tres":
+
+Bucle de 3 iteraciones (máximo).
+
+El jugador elige una carta por índice (1, 2 o 3).
+
+Se usa eliminar_carta para sacar la carta jugada del array de la mano (desplazando las restantes).
+
+Se compara con determinar_ganador_baza.
+
+El primero en ganar 2 manos (bazas) gana la ronda.
+
+Regla de primera: Si hay empate en bazas (parda), el código tiene lógica para definir ganador basándose en quién ganó la primera (variable primera_ganada).
+
+Resumen de Variables Globales Importantes
+EstadoTruco estadoTruco: Mantiene el estado actual (si se cantó Truco, Retruco, etc.) para saber cuántos puntos están en juego.
+
+int mano: Controla quién empieza la ronda. Es vital para definir quién gana en caso de empate en el envido.
