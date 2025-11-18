@@ -208,7 +208,7 @@ int obtener_valor_envido_mano(Jugador *j) {
     return max_pareja;
 }
 
-// --- LÓGICA DE JUEGO (TRUCO) ---
+// --- LOGICA DE JUEGO (TRUCO) ---
 
 // Determina el ganador de una baza (una carta contra otra)
 // Devuelve 1 si gana j1, 2 si gana j2, 0 si es empate.
@@ -659,6 +659,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
