@@ -223,6 +223,49 @@ Antes de jugar, el código prepara el terreno mediante dos funciones clave:
 
 - barajar: Utiliza el algoritmo Fisher-Yates para mezclar el array de cartas de manera eficiente y aleatoria.
 
+Vectores (Arreglos Unidimensionales)
+
+El código se apoya en 4 vectores principales para manejar la información:
+
+A. El Mazo (mazo)
+
+Declaración: Carta mazo[NUM_CARTAS]; (en el main)
+
+Tamaño: 40 posiciones (definido por #define NUM_CARTAS 40).
+
+Tipo: Vector de estructuras Carta.
+
+Función: Es el contenedor principal de todas las cartas del juego. Aunque conceptualmente la baraja tiene "2 dimensiones" (4 palos x 10 números), el código las aplana en una sola lista larga del índice 0 al 39.
+
+B. La Mano del Jugador (mano)
+
+Declaración: Carta mano[CARTAS_POR_JUGADOR]; (dentro de la struct Jugador)
+
+Tamaño: 3 posiciones.
+
+Tipo: Vector de estructuras Carta.
+
+Función: Almacena las 3 cartas activas que tiene un jugador en ese momento. Es vital para las funciones imprimir_mano y jugar_mano.
+
+C. El Nombre del Jugador (nombre)
+
+Declaración: char nombre[20]; (dentro de la struct Jugador)
+
+Tamaño: 20 caracteres.
+
+Tipo: Vector de char (Cadena de texto estilo C).
+
+Función: Guarda el nombre que ingresas al principio (ej: "Juan") y "CPU". En C, los textos son vectores de caracteres terminados en un carácter nulo \0.
+
+D. Nombres de los Palos (nombre_palo)
+
+Declaración: const char *nombre_palo[] = {"O", "C", "E", "B"}; (variable global)
+
+Tamaño: 4 posiciones.
+
+Tipo: Vector de punteros a caracteres (o vector de strings).
+
+Función: Sirve como un diccionario rápido para traducir el enum (0, 1, 2, 3) a texto ("O", "C", "E", "B") al momento de imprimir en pantalla.
 
 El Flujo Principal (main)
 --
