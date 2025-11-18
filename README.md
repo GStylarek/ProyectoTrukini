@@ -171,6 +171,7 @@ Fix I| Bug de puntos de envido: con el cambio del sistema de envido, resolvimos 
 Fix II| Pulimos mejor el menú de jugadas, ahora cuando la mano es de la CPU, no nos permite cantar ENVIDO a nosotros primero.
 
 - Reemplazamos el sistema del TRUCO, dejandolo más realista.
+  1. Esto logramos reemplazando la estructura único de IF-ELSE anidado que tenia dentro de main anteriormente, y agregando una variable global con un conjunto de IF-ELSE anidado, junto con: *int = rand () %100;* para que la CPU evalúe probabilidades y pueda cantar o contra-cantar jugadas.
   
 - Logramos intercalar las "manos" y que la CPU tome la iniciativa para cantar jugadas.
   
