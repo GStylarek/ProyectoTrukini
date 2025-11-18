@@ -634,11 +634,7 @@ int main() {
         }
         
         puntos_truco_ronda = valor_truco;
-        
-        // --- CPU canta TRUCO cuando es mano ---
-       
-		
-        
+             
         // --- 3. FASE DE JUEGO DE CARTAS ---
         jugar_mano(&jugador1, &jugador2, &puntos_truco_ronda, &puntos_envido_ronda);
         
@@ -663,5 +659,6 @@ int main() {
 
     return 0;
 }
+
 
 
