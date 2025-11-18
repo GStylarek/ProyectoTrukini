@@ -188,6 +188,8 @@ Fix II| Pulimos mejor el menú de jugadas, ahora cuando la mano es de la CPU, no
     1. Permitir cantar Truco entre rondas, si no fue cantado con anterioridad.
     2. Permitir contra-cantar ENVIDO, si el rival canta TRUCO sin haberse medido los tantos antes.
   - Perfeccionar la resolución del TRUCO, hay algunos bugs cuando se empardan las bazas que necesitan revisarse.
+  - Agregar la posibilidad de rendirse o "irse al mazo", tanto para el jugador como para la CPU.
+    
        
  
  
