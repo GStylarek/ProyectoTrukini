@@ -420,7 +420,7 @@ int cantar_truco(Jugador *j1, Jugador *j2) {
 }
 
 
-// --- FUNCIÓN PRINCIPAL ---
+// --- FUNCION PRINCIPAL ---
 
 int main() {
     Carta mazo[NUM_CARTAS];
@@ -430,11 +430,11 @@ int main() {
     //Pedir nombre al jugador
     printf("Ingresa tu nombre: ");
     fgets(jugador1.nombre, 20, stdin);
-    jugador1.nombre[strcspn(jugador1.nombre, "\n")] = '\0'; //sacar salto de línea
+    jugador1.nombre[strcspn(jugador1.nombre, "\n")] = '\0'; //sacar salto de linea
     
     // Inicialización
     inicializar_mazo(mazo);
-    srand((unsigned) time(NULL)); //<<--- aquí movi el srand, para sembrar una sola vez
+    srand((unsigned) time(NULL)); //<<--- aca movi el srand, para sembrar una sola vez
     printf("¡Trukini iniciado!\n");
     printf("Objetivo: %d puntos.\n\n", PUNTOS_FINALES);
     
@@ -465,8 +465,8 @@ int main() {
         printf("La mano es de: %s\n", (mano == 1 ? jugador1.nombre : jugador2.nombre));
 
         
-        // Puntuación de la ronda actual
-        int puntos_truco_ronda = 1; // La mano vale 1 punto (o más si se canta Truco)
+        // Puntuacion de la ronda actual
+        int puntos_truco_ronda = 1; // La mano vale 1 punto (o mas si se canta Truco)
         int puntos_envido_ronda = 2; // Envido vale 2 si se acepta
         
         // --- 1. MOSTRAR MANO ---
@@ -659,6 +659,7 @@ int main() {
 
     return 0;
 }
+
 
 
 
