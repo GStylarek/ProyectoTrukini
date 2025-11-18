@@ -174,7 +174,7 @@ Fix II| Pulimos mejor el menú de jugadas, ahora cuando la mano es de la CPU, no
   
 - Logramos intercalar las "manos" y que la CPU tome la iniciativa para cantar jugadas.
   
-- Con el nuevo sistema, logramos que la CPU tenga una inteligencia artificial basica, esto permite que:
+- Con el nuevo sistema, logramos pulir la inteligencia artificial de la CPU, esto permite que:
   1. Acepte y/o eleve las apuestas tanto en la instancia de ENVIDO, como en el de TRUCO.
   2. La CPU, si bien tiene una inteligencia básica, el juego es bastante fluido y llevadero.
  
