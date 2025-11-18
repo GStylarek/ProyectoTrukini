@@ -8,17 +8,17 @@ Lenguaje de programación: C
 ------------------------------------------------------------------------------------
 La idea del proyecto es lograr simular un juego de cartas argentino llamado "truco", con todas sus caracteristicas y reglas: 
 
--Reconocer e identificar las distintas cartas y sus respectivos valores.
+- Reconocer e identificar las distintas cartas y sus respectivos valores.
 
--Barajar el mazo de 40 cartas.
+- Barajar el mazo de 40 cartas.
 
--Repartir entre dos jugadores, 3 cartas para cada uno.
+- Repartir entre dos jugadores, 3 cartas para cada uno.
 
--Permitir las diferentes "jugadas" de las reglas: truco, retruco, vale 4, envido, real envido, falta envido.
+- Permitir las diferentes "jugadas" de las reglas: truco, retruco, vale 4, envido, real envido, falta envido.
 
--Imprimir que jugador ganó la ronda y cuantos puntos se lleva cada uno.
+- Imprimir que jugador ganó la ronda y cuantos puntos se lleva cada uno.
 
--Imprimir en un cuadro una matriz donde se vayan guardando la cantidad de puntos.
+- Imprimir en un cuadro una matriz donde se vayan guardando la cantidad de puntos.
 
 ------------------------------------------------------------------------------------
 -Fase uno (manual)-
@@ -28,13 +28,13 @@ al repartir las cartas.*
 
 Funciones:
 
--*inicializar_mazo*: crea las 40 estructuras de Carta y llama asignar_valores_carta para darles sus valores de juego.
+- *inicializar_mazo*: crea las 40 estructuras de Carta y llama asignar_valores_carta para darles sus valores de juego.
 
--*asignar_valores_carta*: contiene la lógica central del truco, determina el valor_truco (jerarquia) y el valor_envido de cada carta.
+- *asignar_valores_carta*: contiene la lógica central del truco, determina el valor_truco (jerarquia) y el valor_envido de cada carta.
 
--*barajar*: desordena el mazo de cartas de forma aleatoria (aqui utilizamos rand() y time ()).
+- *barajar*: desordena el mazo de cartas de forma aleatoria (aqui utilizamos rand() y time ()).
 
--*repartir*: asigna las primeras 6 cartas del mazo barajando a las manos de los jugadores.
+- *repartir*: asigna las primeras 6 cartas del mazo barajando a las manos de los jugadores.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -134,20 +134,20 @@ Para esto agregamos a la fase de apuestas una serie de IF-ELSE anidados, en dond
 
 Logros:
 
--Opción de que el usuario coloque el nombre que quisiera tener.
+- Opción de que el usuario coloque el nombre que quisiera tener.
 
--Logramos tener la posibilidad de jugar contra la CPU.
+- Logramos tener la posibilidad de jugar contra la CPU.
 
--Jugadas de Envido.
+- Jugadas de Envido.
 
--Jugadas de Truco.
+- Jugadas de Truco.
 Para esto definimos una variable global *"typedef enum"*, para comunicar el estado del truco *{TRUCO_NINGUNO, TRUCO_CANTADO, RETRUCO_CANTADO, VALE4_CANTADO}*
 
 Aunque esto trajo consigo varios bugs que necesitaban ser atendidos:
 
--Cuando la CPU rechazaba el envido, la ronda quedaba finalizada. Lo correcto era que al rechazar esto, se pase a la instacia de TRUCO.
+- Cuando la CPU rechazaba el envido, la ronda quedaba finalizada. Lo correcto era que al rechazar esto, se pase a la instacia de TRUCO.
 
--Cuando se pasaba a la instancia de la apuesta del TRUCO, si la CPU rechazaba no nos imprimia la tabla de puntaje, cuando lo mas acertado es que cada que finalizara una ronda, está se imprimiera.
+- Cuando se pasaba a la instancia de la apuesta del TRUCO, si la CPU rechazaba no nos imprimia la tabla de puntaje, cuando lo mas acertado es que cada que finalizara una ronda, está se imprimiera.
 
 V1.2
 --
