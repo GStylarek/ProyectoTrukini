@@ -13,10 +13,6 @@ typedef enum {
     ORO, COPA, ESPADA, BASTO, NUM_PALOS
 } Palo;
 
-// Enum para la posible acción de un jugador
-typedef enum {
-    NADA, TRUCO, ENVIDO
-} Accion;
 
 //Enum para el estado del truco (v1.1)
 typedef enum{
@@ -112,18 +108,20 @@ void asignar_valores_carta(Carta *c) {
     int num = c->numero;
     Palo p = c->palo;
 
-    if (num == 1 && p == ESPADA) c->valor_truco = 12; // 1 E (Macho)
-    else if (num == 1 && p == BASTO) c->valor_truco = 11; // 1 B
-    else if (num == 7 && p == ESPADA) c->valor_truco = 10; // 7 E
-    else if (num == 7 && p == ORO) c->valor_truco = 9; // 7 O
-    else if (num == 3) c->valor_truco = 8;
-    else if (num == 2) c->valor_truco = 7;
-    else if (num == 1) c->valor_truco = 6; // 1 de Copa y Oro
-    else if (num == 12) c->valor_truco = 5; // Reyes
-    else if (num == 11) c->valor_truco = 4; // Caballos
-    else if (num == 10) c->valor_truco = 3; // Sotas
-    else if (num == 7) c->valor_truco = 2; // 7 de Copa y Basto
-    else c->valor_truco = 1; // 4, 5, 6
+    if (num == 1 && p == ESPADA) c->valor_truco = 14; // 1 E (Macho)
+    else if (num == 1 && p == BASTO) c->valor_truco = 13; // 1 B (hembra)
+    else if (num == 7 && p == ESPADA) c->valor_truco = 12; // 7 E
+    else if (num == 7 && p == ORO) c->valor_truco = 11; // 7 O
+    else if (num == 3) c->valor_truco = 10;
+    else if (num == 2) c->valor_truco = 9;
+    else if (num == 1) c->valor_truco = 8; // 1 de Copa y Oro
+    else if (num == 12) c->valor_truco = 7; // Reyes
+    else if (num == 11) c->valor_truco = 6; // Caballos
+    else if (num == 10) c->valor_truco = 5; // Sotas
+    else if (num == 7) c->valor_truco = 4; // 7 de Copa y Basto
+    else if (num == 6) c->valor_truco = 3; //6
+    else if (num == 5) c->valor_truco = 2;//5
+    else if (num == 4) c->valor_truco = 1; //4
 }
 
 // Inicializa las 40 cartas del mazo
@@ -316,6 +314,112 @@ void jugar_mano(Jugador *j1, Jugador *j2, int *puntos_truco, int *puntos_envido)
 //variable global para alternar manos entre la CPU y el jugadror
 int mano = 1;
 
+//MECANICA V1.3 de cantos de TRUCO
+
+int cantar_truco(Jugador *j1, Jugador *j2) {
+
+    int turno = mano;  // 1 = jugador, 2 = CPU
+
+    // Si la CPU es mano -> puede cantar Truco antes del jugador.
+    // Si el jugador es mano -> primero se ofrece Truco al jugador.
+
+    int opcion;
+
+    if (turno == 2) {
+        // CPU decide si cantar Truco
+        int prob = rand() % 100;
+        if (prob < 40) {
+            printf("\nCPU: Le canto TRUCO COMPA!\n");
+            estadoTruco = TRUCO_CANTADO;
+
+            printf("\nOpciones:\n");
+            printf("1) Quiero\n");
+            printf("2) No quiero\n");
+            printf("3) Quiero RETRUCO\n");
+            printf("Elegi: ");
+            scanf("%d", &opcion); getchar();
+
+            // JUGADOR RESPONDE
+            if (opcion == 1) return 2; // quiero ? vale 2
+            if (opcion == 2) return -1; // no quiero ? CPU gana 1
+            if (opcion == 3) {
+                estadoTruco = RETRUCO_CANTADO;
+                printf("\nCPU pensando...\n");
+
+                int prob2 = rand() % 100;
+
+                if (prob2 < 50) {
+                    printf("CPU: Quiero RETRUCO!\n");
+                    return 3;
+                } else if (prob2 < 80) {
+                    printf("CPU: No quiero.\n");
+                    return -1;
+                } else {
+                    printf("CPU: QUIERO VALE 4!!!\n");
+                    estadoTruco = VALE4_CANTADO;
+
+                    printf("\nOpciones:\n1) Quiero\n2) No quiero\n");
+                    printf("Elegi: ");
+                    scanf("%d", &opcion); getchar();
+
+                    if (opcion == 1) return 4;
+                    else return -1;
+                }
+            }
+        }
+    }
+
+    // OFRECER AL JUGADOR CANTAR TRUCO
+    printf("\nQueres cantar TRUCO?\n1) No\n2) Truco\nElegi: ");
+    scanf("%d", &opcion); getchar();
+
+    if (opcion == 1) return 1; // vale 1
+
+    // JUGADOR CANTA TRUCO
+    printf("\n%s: LE CANTO TRUCO!\n", j1->nombre);
+    estadoTruco = TRUCO_CANTADO;
+
+    // CPU RESPONDE
+    int prob = rand() % 100;
+
+    if (prob < 50) {
+        printf("CPU: Quiero.\n");
+        return 2;
+    }
+    else if (prob < 80) {
+        printf("CPU: No quiero.\n");
+        return -1;
+    }
+    else {
+        printf("CPU: QUIERO RETRUCO!\n");
+        estadoTruco = RETRUCO_CANTADO;
+
+        printf("\nOpciones:\n1) Quiero\n2) No quiero\n3) Quiero VALE!!!!! 4\n");
+        printf("Elige: ");
+        scanf("%d", &opcion); getchar();
+
+        if (opcion == 1) return 3;     // quiero retruco ? vale 3
+        if (opcion == 2) return -1;    // no quiero ? CPU gana 2
+
+        // jugador quiere VALE 4
+        estadoTruco = VALE4_CANTADO;
+        printf("\nCPU pensando...\n");
+
+        int prob2 = rand() % 100;
+
+        if (prob2 < 60) {
+            printf("CPU: No me le voy a achicar, QUIERO!!!\n");
+            return 4;
+        } else {
+            printf("CPU: No quiero.\n");
+            return -1;
+        }
+    }
+
+    return 1;
+}
+
+
 // --- FUNCIÓN PRINCIPAL ---
 
 int main() {
@@ -365,7 +469,7 @@ int main() {
         int puntos_truco_ronda = 1; // La mano vale 1 punto (o más si se canta Truco)
         int puntos_envido_ronda = 2; // Envido vale 2 si se acepta
         
-        // --- 1. MOSTRAR MANOS (En un juego real, esto no se mostraría) ---
+        // --- 1. MOSTRAR MANO ---
         imprimir_mano(&jugador1);
         printf("\n");
         imprimir_mano(&jugador2);
@@ -381,10 +485,60 @@ int main() {
         
         printf("\nDeseas cantar envido?\n");
         
-        printf("1) No\n");
-        printf("2) Envido\n");
+        //CPU canta ENVIDO
+        
+        if(mano == 2){
+        	int envido_cpu = obtener_valor_envido_mano(&jugador2);
+        	int prob_envido = 0;
+        	
+        	if (envido_cpu >= 31) prob_envido = 80;
+        	else if (envido_cpu >= 27) prob_envido = 55;
+        	else if (envido_cpu >= 23) prob_envido = 35;
+        	else prob_envido = 10;
+        	
+        	int decision = rand() % 100;
+        	
+        	if (decision < prob_envido){
+        		printf("\nCPU: ENVIDO!\n");
+        		estadoEnvido = 1;
+        		puntos_envido = 2;
+        		
+        		int aceptar;
+        		printf ("Aceptas? (1=SI, 2=NO): ");
+        		scanf("%d", &aceptar);
+        		getchar();
+        		
+        		if (aceptar == 1){
+        			envido_aceptado = 1;
+        		} else {
+        			printf ("No queres. CPU suma 1 punto.\n");
+        			jugador2.puntos_partida += 1;
+        		}
+        	}
+        }
+        
+        
+        /*
+		Version 1.2:
+		printf("1) No\n");
+        printf("2) Envido\n"); 
         printf("3) Real Envido\n");
         printf("4) Falta Envido\n");
+        */
+        
+        
+        //V1.3:
+        
+        printf("\nOpciones:\n");
+        printf("1) No\n");
+        
+        if (mano == 1){
+        	printf("2) Envido\n");
+        	printf("3) Real Envido\n");
+        	printf("4) Falta Envido\n");
+        } else {
+        	printf("(No podes cantar envido primero porque NO sos mano)\n");
+        }
         printf("Elige: ");
         scanf("%d", &opcion);
         getchar();
@@ -451,7 +605,10 @@ int main() {
         	if (puntaje_j1 > puntaje_j2){
         		jugador1.puntos_partida += puntos_envido;
         		printf("\nGANASTE el Envido! +%d puntos.\n", puntos_envido);
-        	} else {
+        	} else if (puntaje_j2 > puntaje_j1){
+        		jugador2.puntos_partida += puntos_envido;
+        		printf("\n La CPU gano el Envido, gana +%d puntos.\n", puntos_envido);
+        	}else {
         		if (mano == 1){
         			jugador1.puntos_partida += puntos_envido;
         			printf("Empate de envido. Gana %s por ser mano.\n", jugador1.nombre);
@@ -465,97 +622,21 @@ int main() {
         }
         
         //------ OPCION DE CANTAR TRUCO -------
-	
-		estadoTruco = TRUCO_NINGUNO;
-		
-		printf("\nDeseas cantar truco?\n");
-		printf("1) No\n");
-		printf("2) Truco\n");
-		printf("Elige: ");
-		scanf("%d",&opcion);
-		getchar();
-		
-		if (opcion == 2){
-			printf("\nCantas TRUCO.\n");
-			estadoTruco= TRUCO_CANTADO;
-			
-						//Respuesta del rival (IA simple)
-			int prob = rand() % 100;
-			if (prob < 70){
-				printf("El rival dice: QUIERO!\n");
-				puntos_truco_ronda = 2;
-			} else {
-			printf("El rival dice: NO quiero...\n");
-			jugador1.puntos_partida +=1;
-			printf ("%s suma 1 punto. \n", jugador1.nombre);
-			imprimir_puntos_totales(&jugador1, &jugador2);
-			printf("\nPresiona ENTER para la siguiente ronda...\n");
-			getchar();
-			continue;	
-			}
-			
-			if(estadoTruco == TRUCO_CANTADO){
-				printf("\nDeseas cantar Retruco?\n");
-				printf("1) No\n");
-				printf("2) Retruco!\n");
-				printf("Elegi: ");
-				scanf("%d",&opcion);
-				getchar();
-				
-				if (opcion == 2){
-					printf("\nRETRUCO!\n");
-					estadoTruco = RETRUCO_CANTADO;
-					
-					int prob = rand() %100;
-					if (prob < 50){
-						printf("El rival dice: QUIERO LA PUCHA!\n");
-						puntos_truco_ronda = 3;
-					}else {
-					printf("El rival dice: NO quiero...\n");
-					jugador1.puntos_partida += 2;
-					printf("%s suma 2 puntos.\n", jugador1.nombre);
-					imprimir_puntos_totales(&jugador1, &jugador2);
-					printf("\nPresiona ENTER para la siguiente ronda...\n");
-					getchar();
-					continue;
-			     	}
-			     	
-			     	
-					if (estadoTruco == RETRUCO_CANTADO){
-						printf("\nDeseas cantar VALE 4?\n");
-		               	printf("1) NO\n");
-		            	printf("2) QUIERO VALE 4!!\n");
-		            	printf("Elige: ");
-		            	scanf("%d", &opcion);
-			            getchar();
-			            
-			            if (opcion == 2){
-							printf("\nCantas VALE CUATRO!\n");
-				            estadoTruco = VALE4_CANTADO;
-				
-				            int prob = rand() % 100;
-							
-							if(prob<40){
-								printf("El rival dice: QUIERO!!\n");
-					            puntos_truco_ronda = 4;
-							} else {
-									printf("El rival dice: No che, no quiero...\n");
-					                jugador1.puntos_partida += 3;
-				                	printf("%s suma 3 puntos.\n", jugador1.nombre);
-				                	imprimir_puntos_totales(&jugador1, &jugador2);
-					                printf("\nPresiona ENTER para la siguiente ronda...\n");
-					                getchar();
-					                continue;
-							}
-							
-							
-						}
-					}
-					
-				}
-			}
-
-		}  
+        int valor_truco = cantar_truco(&jugador1, &jugador2);
+        
+        if(valor_truco == -1){
+        	if(estadoTruco == TRUCO_CANTADO){
+        		if(mano == 1) jugador2.puntos_partida +=1;
+        		else jugador1.puntos_partida +=1;
+        	}
+        	estadoTruco = TRUCO_NINGUNO;
+        	continue;
+        }
+        
+        puntos_truco_ronda = valor_truco;
+        
+        // --- CPU canta TRUCO cuando es mano ---
+       
 		
         
         // --- 3. FASE DE JUEGO DE CARTAS ---
@@ -582,3 +663,5 @@ int main() {
 
     return 0;
 }
+
+
