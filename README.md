@@ -180,6 +180,13 @@ Fix II| Pulimos mejor el menú de jugadas, ahora cuando la mano es de la CPU, no
   3. Logramos resumir un poco mas el código, eliminando enums y otras estructuras que quedaron obsoletas con esta actualización.
 
   A este punto el juego es completamente funcional, dinamico y cumple su función de entretener. Aún queda mecanicas que pulir, asi que esta no seria la versión "final".
+
+  Nuevos Objetivos:
+  - Actualizar el sistema del ENVIDO, permitiendo que la IA tenga la posibilidad de aumentar la apuesta en la instancia (no solo proponer ENVIDO).
+  - Pulir mejor el manejo de los turnos:
+    1. Permitir cantar Truco entre rondas, si no fue cantado con anterioridad.
+    2. Permitir contra-cantar ENVIDO, si el rival canta TRUCO sin haberse medido los tantos antes.
+       
  
  
  
